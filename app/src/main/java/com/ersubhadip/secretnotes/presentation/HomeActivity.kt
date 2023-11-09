@@ -54,12 +54,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ersubhadip.secretnotes.R
 import com.ersubhadip.secretnotes.biometric.BiometricHelper
 import com.ersubhadip.secretnotes.ui.theme.SecretNotesTheme
 
@@ -129,7 +133,12 @@ class MainActivity : AppCompatActivity() {
                                     OutlinedTextField(value = secretNote, onValueChange = {
                                         secretNote = it
                                     }, modifier = Modifier.fillMaxWidth(), label = {
-                                        Text(text = "Secret Notes")
+                                        Text(
+                                            text = "Secret Notes",
+                                            fontFamily = FontFamily(
+                                                Font(R.font.ubuntu)
+                                            )
+                                        )
                                     },
                                         leadingIcon = {
                                             Icon(
@@ -160,7 +169,13 @@ class MainActivity : AppCompatActivity() {
                                         ),
                                         shape = RoundedCornerShape(12.dp)
                                     ) {
-                                        Text(text = "Add Note", color = Color.White)
+                                        Text(
+                                            text = "Add Note",
+                                            color = Color.White,
+                                            fontFamily = FontFamily(
+                                                Font(R.font.ubuntu)
+                                            )
+                                        )
                                     }
                                 }
                             }
@@ -215,33 +230,52 @@ class MainActivity : AppCompatActivity() {
                                     .padding(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(notes.reversed(), key = { it.id ?: 0 }) {
-                                    Box(
-                                        modifier = Modifier
-                                            .animateItemPlacement(animationSpec = tween(500))
-                                            .fillMaxWidth()
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(MaterialTheme.colorScheme.primary)
-                                            .padding(16.dp)
-                                            .blur(
-                                                blurValue,
-                                                edgeTreatment = BlurredEdgeTreatment.Unbounded
-                                            )
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                item {
+                                    Spacer(modifier = Modifier.height(24.dp))
+                                    Text(
+                                        text = "My Secret Notes",
+                                        color = Color.White,
+                                        fontSize = 24.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
+                                if (notes.isNotEmpty()) {
+                                    items(notes.reversed(), key = { it.id ?: 0 }) {
+                                        Box(
+                                            modifier = Modifier
+                                                .animateItemPlacement(animationSpec = tween(500))
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(MaterialTheme.colorScheme.primary)
+                                                .padding(16.dp)
+                                                .blur(
+                                                    blurValue,
+                                                    edgeTreatment = BlurredEdgeTreatment.Unbounded
+                                                )
                                         ) {
-                                            Text(text = it.note)
-                                            AnimatedVisibility(visible = authorized) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Delete,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.clickable {
-                                                        viewModel.deleteOne(it)
-                                                    })
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(text = it.note)
+                                                AnimatedVisibility(visible = authorized) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Delete,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.clickable {
+                                                            viewModel.deleteOne(it)
+                                                        })
+                                                }
                                             }
                                         }
+                                    }
+                                } else {
+                                    item {
+                                        Text(
+                                            text = "You have not added any notes yet",
+                                            color = Color.White,
+                                            fontSize = 14.sp
+                                        )
                                     }
                                 }
                             }
