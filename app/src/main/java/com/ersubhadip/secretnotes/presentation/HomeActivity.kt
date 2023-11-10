@@ -81,8 +81,6 @@ import dev.shreyaspatil.capturable.controller.rememberCaptureController
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 class MainActivity : AppCompatActivity() {
 
-    private var lockedBitmap: Bitmap? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -123,8 +121,13 @@ class MainActivity : AppCompatActivity() {
                         label = "BlurAnimation"
                     )
 
+                    var lockedBitmap: Bitmap? by remember { mutableStateOf(null) }
+
+                    val captureController = rememberCaptureController()
+
                     LaunchedEffect(key1 = Unit) {
                         authorize()
+                        captureController.capture()
                     }
 
                     if (dialogOpenState) {
@@ -232,7 +235,6 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }) { paddings ->
-                        val captureController = rememberCaptureController()
                         Capturable(
                             controller = captureController,
                             onCaptured = { bitmap, error ->
