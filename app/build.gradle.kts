@@ -98,6 +98,9 @@ dependencies {
 
     //android biometric api
     implementation("androidx.biometric:biometric:$biometric_version")
+
+    //composable to image
+    implementation("dev.shreyaspatil:capturable:1.0.3")
 }
 
 kapt {
