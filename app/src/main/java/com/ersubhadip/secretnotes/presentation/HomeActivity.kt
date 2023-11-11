@@ -263,11 +263,12 @@ class MainActivity : AppCompatActivity() {
                                                     modifier = Modifier.fillMaxWidth(),
                                                     horizontalArrangement = Arrangement.SpaceBetween
                                                 ) {
-                                                    Text(text = it.note)
+                                                    Text(text = it.note, color = Color.White)
                                                     AnimatedVisibility(visible = authorized) {
                                                         Icon(
                                                             imageVector = Icons.Default.Delete,
                                                             contentDescription = null,
+                                                            tint = Color.White,
                                                             modifier = Modifier.clickable {
                                                                 viewModel.deleteOne(it)
                                                             })

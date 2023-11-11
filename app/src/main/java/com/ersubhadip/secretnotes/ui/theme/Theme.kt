@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -15,12 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Blue["700"]!!,
-    secondary = Blue["500"]!!,
-    tertiary = Blue["200"]!!,
-    background = Blue["500"]!!
-)
 
 private val LightColorScheme = lightColorScheme(
     primary = Blue["700"]!!,
@@ -38,6 +31,8 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
+private val DarkColorScheme = LightColorScheme
 
 @Composable
 fun SecretNotesTheme(
