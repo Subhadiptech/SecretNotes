@@ -1,11 +1,7 @@
 package com.ersubhadip.secretnotes.presentation
 
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
-import android.renderscript.Allocation
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -54,15 +50,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -75,8 +67,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ersubhadip.secretnotes.R
 import com.ersubhadip.secretnotes.biometric.BiometricHelper
 import com.ersubhadip.secretnotes.ui.theme.SecretNotesTheme
-import dev.shreyaspatil.capturable.Capturable
-import dev.shreyaspatil.capturable.controller.rememberCaptureController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 class MainActivity : AppCompatActivity() {
@@ -123,11 +113,8 @@ class MainActivity : AppCompatActivity() {
 
                     var lockedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
-                    val captureController = rememberCaptureController()
-
                     LaunchedEffect(key1 = Unit) {
                         authorize()
-                        captureController.capture()
                     }
 
                     if (dialogOpenState) {
@@ -235,138 +222,83 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }) { paddings ->
-                        Capturable(
-                            controller = captureController,
-                            onCaptured = { bitmap, error ->
-                                if (bitmap != null) {
-                                    lockedBitmap = bitmap.asAndroidBitmap()
-                                }
 
-                                if (error != null) {
-                                    throw UnsupportedOperationException("Unable to obtain graphics")
-                                }
-                            },
-                            content = {
-                                Box(
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddings)
+                        ) {
+                            if (authorized) {
+                                LazyColumn(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(paddings)
+                                        .padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    LazyColumn(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        item {
-                                            Spacer(modifier = Modifier.height(24.dp))
-                                            Text(
-                                                text = "My Secret Notes",
-                                                color = Color.White,
-                                                fontSize = 24.sp
-                                            )
-                                            Spacer(modifier = Modifier.height(16.dp))
-                                        }
-                                        if (notes.isNotEmpty()) {
-                                            items(notes.reversed(), key = { it.id ?: 0 }) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .animateItemPlacement(
-                                                            animationSpec = tween(
-                                                                500
-                                                            )
+                                    item {
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                        Text(
+                                            text = "My Secret Notes",
+                                            color = Color.White,
+                                            fontSize = 24.sp
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                    }
+                                    if (notes.isNotEmpty()) {
+                                        items(notes.reversed(), key = { it.id ?: 0 }) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .animateItemPlacement(
+                                                        animationSpec = tween(
+                                                            500
                                                         )
-                                                        .fillMaxWidth()
-                                                        .clip(RoundedCornerShape(8.dp))
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .padding(16.dp)
-                                                        .then(
-                                                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                                                                lockedBitmap?.let {
-                                                                    LegacyBlur(
-                                                                        lockedBitmap!!,
-                                                                        15f
-                                                                    )
-                                                                }
-                                                                Modifier.blur(
-                                                                    0.dp,
-                                                                    edgeTreatment = BlurredEdgeTreatment.Unbounded
-                                                                )
-                                                            } else {
-                                                                Modifier.blur(
-                                                                    blurValue,
-                                                                    edgeTreatment = BlurredEdgeTreatment.Unbounded
-                                                                )
-                                                            }
-                                                        )
+                                                    )
+                                                    .fillMaxWidth()
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(MaterialTheme.colorScheme.primary)
+                                                    .padding(16.dp)
 
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
                                                 ) {
-                                                    Row(
-                                                        modifier = Modifier.fillMaxWidth(),
-                                                        horizontalArrangement = Arrangement.SpaceBetween
-                                                    ) {
-                                                        Text(text = it.note)
-                                                        AnimatedVisibility(visible = authorized) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Delete,
-                                                                contentDescription = null,
-                                                                modifier = Modifier.clickable {
-                                                                    viewModel.deleteOne(it)
-                                                                })
-                                                        }
+                                                    Text(text = it.note)
+                                                    AnimatedVisibility(visible = authorized) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Delete,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.clickable {
+                                                                viewModel.deleteOne(it)
+                                                            })
                                                     }
                                                 }
                                             }
-                                        } else {
-                                            item {
-                                                Text(
-                                                    text = "You have not added any notes yet",
-                                                    color = Color.White,
-                                                    fontSize = 14.sp
-                                                )
-                                            }
+                                        }
+                                    } else {
+                                        item {
+                                            Text(
+                                                text = "You have not added any notes yet",
+                                                color = Color.White,
+                                                fontSize = 14.sp
+                                            )
                                         }
                                     }
                                 }
+                            } else {
+                                Image(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    painter = painterResource(R.drawable.ic_blur_placeholder),
+                                    contentDescription = null
+                                )
                             }
-                        )
+                        }
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun LegacyBlur(
-    bitmap: Bitmap,
-    blurRadio: Float,
-    modifier: Modifier = Modifier.fillMaxSize()
-) {
-
-    val renderScript = RenderScript.create(LocalContext.current)
-    val bitmapAlloc = Allocation.createFromBitmap(renderScript, bitmap)
-    ScriptIntrinsicBlur.create(renderScript, bitmapAlloc.element).apply {
-        setRadius(blurRadio)
-        setInput(bitmapAlloc)
-        forEach(bitmapAlloc)
-    }
-    bitmapAlloc.copyTo(bitmap)
-    renderScript.destroy()
-    BlurImage(bitmap, modifier)
-}
-
-@Composable
-fun BlurImage(
-    bitmap: Bitmap,
-    modifier: Modifier = Modifier.fillMaxSize(),
-) {
-    Image(
-        bitmap = bitmap.asImageBitmap(),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = modifier
-    )
 }
 
 @Composable

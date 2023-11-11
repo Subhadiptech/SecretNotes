@@ -23,18 +23,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(1_8))
-        }
-    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -98,9 +94,6 @@ dependencies {
 
     //android biometric api
     implementation("androidx.biometric:biometric:$biometric_version")
-
-    //composable to image
-    implementation("dev.shreyaspatil:capturable:1.0.3")
 }
 
 kapt {
