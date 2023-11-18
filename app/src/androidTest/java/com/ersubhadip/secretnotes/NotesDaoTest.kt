@@ -17,7 +17,6 @@ class NotesDaoTest {
     lateinit var notesDatabase: SecretDatabase
     lateinit var notesDao: NotesDao
 
-
 //    @get:Rule
 //    val instantExecutorRule = InstantTaskExecutorRule()   //this will sync execute
 
@@ -37,7 +36,7 @@ class NotesDaoTest {
     fun test_insertNotesData() = runBlocking {
         val note = NotesEntity(0, "Test case")
         notesDao.createNote(note)
-        val result = notesDao.getNotes().collectLatest {
+        notesDao.getNotes().collectLatest {
             assertEquals(1, it.size)
         }  //this is a flow so we have to wait for the threads
     }
